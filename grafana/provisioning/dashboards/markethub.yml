@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: Markethub
+    orgId: 1
+    folder: Markethub
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

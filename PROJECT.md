@@ -125,50 +125,15 @@ Staff:   [ViewProducts, ViewOrders]
 
 ## 🚀 Technical Stack
 
-### **Core Dependencies**
-
-```toml
-# Web Framework
-axum # Modern, composable, Tokio-native
-tower # Middleware
-tower-http # CORS, tracing
-
-# Database
-sqlx # Async, compile-time checked queries
-     # Features: postgres, runtime-tokio-rustls, migrate
-
-# Serialization
-serde # JSON
-serde_json
-
-# Validation
-validator # Derive macros for rules
-
-# Auth
-jsonwebtoken # JWT
-argon2 # Password hashing
-
-# Observability
-tracing
-tracing-subscriber
-prometheus # Metrics
-
-# Error Handling
-anyhow # Service layer
-thiserror # Domain errors
-
-# Utilities
-uuid
-chrono
-```
-
 ### **Infrastructure**
 
+- **Language**: Rust
+- **Web Framework**: Axum
 - **Database**: PostgreSQL
 - **Cache**: Redis (future: session, rate limiting)
-- **Container**: Docker + docker-compose
+- **Container**: Docker + docker compose
 - **CI/CD**: GitHub Actions
-- **Monitoring**: Prometheus + Grafana
+- **Monitoring**: Prometheus + Grafana 
 
 ---
 
@@ -195,21 +160,6 @@ chrono
    /──────────\
   /   UNIT     \    60% - Business logic, validation
  /──────────────\
-```
-
-### **Coverage Targets**
-
-- **Unit Tests**: 80%+ coverage
-- **Integration Tests**: All critical paths
-- **E2E Tests**: Happy paths + key error scenarios
-
-### **Test Organization**
-
-```
-tests/
-├── unit/           # Fast, isolated
-├── integration/    # DB + services
-└── e2e/            # Full HTTP stack
 ```
 
 ---
@@ -248,47 +198,6 @@ On merge to main:
   ✓ Push Docker image to registry
   ✓ Deploy to staging
 ```
-
----
-
-## 🎯 Immediate Goals (MVP)
-
-### **Phase 1: Foundation** (Current)
-
-- [ ] Project structure
-- [ ] Database schema + migrations
-- [ ] Core models with validation
-- [ ] Error handling pattern
-
-### **Phase 2: Authentication**
-
-- [ ] User registration/login
-- [ ] JWT middleware
-- [ ] Password hashing
-
-### **Phase 3: Store Management**
-
-- [ ] CRUD stores (public/private)
-- [ ] Store member management
-- [ ] Permission system
-
-### **Phase 4: Products**
-
-- [ ] CRUD products per store
-- [ ] Authorization checks
-- [ ] Stock management
-
-### **Phase 5: Shopping**
-
-- [ ] Cart operations
-- [ ] Multi-store checkout
-- [ ] Order processing
-
-### **Phase 6: Advanced**
-
-- [ ] Access grants for private stores
-- [ ] Store analytics
-- [ ] Metrics endpoint
 
 ---
 
