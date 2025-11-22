@@ -1,8 +1,12 @@
 use crate::config::Config;
 use crate::handlers;
-use axum::{routing::get, Router};
+use crate::metrics::Metrics;
+use crate::middleware::metrics::track_metrics;
+use crate::state::AppState;
+use crate::utils::jwt::JwtConfig;
+use axum::middleware;
 use sqlx::postgres::PgPoolOptions;
-use std::net::SocketAddr;
+use std::{net::SocketAddr, sync::Arc};
 use tower_http::{
     compression::CompressionLayer,
     cors::CorsLayer,
@@ -21,11 +25,13 @@ pub async fn run(config: Config) -> anyhow::Result<()> {
 
     tracing::info!("Database connected and migrations applied");
 
+    let jwt_config = JwtConfig::new(&config.jwt_secret, config.jwt_expiration_hours);
+    let metrics = Arc::new(Metrics::default());
+    let state = AppState::new(db_pool.clone(), jwt_config, metrics.clone());
+
     // Build router
-    let app = Router::new()
-        .route("/health", get(handlers::health))
-        .route("/metrics", get(handlers::metrics))
-        // API routes will be added here
+    let app = handlers::api_router()
+        .layer(middleware::from_fn_with_state(state.clone(), track_metrics))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::new().include_headers(true))
@@ -33,7 +39,7 @@ pub async fn run(config: Config) -> anyhow::Result<()> {
         )
         .layer(CompressionLayer::new())
         .layer(CorsLayer::permissive())
-        .with_state(db_pool);
+        .with_state(state);
 
     // Start server
     let addr = SocketAddr::from(([0, 0, 0, 0], config.port));

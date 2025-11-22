@@ -5,11 +5,13 @@
 ### What's Been Built
 
 #### 📁 Project Structure
+
 - Complete Rust workspace with proper layered architecture
 - Handlers → Services → Repositories → Models separation
 - Modular organization for scalability
 
 #### 🗄️ Database Schema
+
 - **8 tables** with proper relationships and constraints
 - UUIDs for all primary keys
 - Automatic timestamp triggers
@@ -17,6 +19,7 @@
 - Enums for type safety (order status, roles, etc.)
 
 **Tables:**
+
 1. `users` - Universal accounts with soft delete
 2. `stores` - Multi-tenant storefronts (public/private)
 3. `products` - Store inventory with SKU management
@@ -28,6 +31,7 @@
 9. `store_access_grants` - Private store invitations
 
 #### 🔧 Infrastructure
+
 - Docker Compose with PostgreSQL
 - Multi-stage Dockerfile for production
 - GitHub Actions CI/CD pipeline
@@ -36,13 +40,15 @@
 - Tracing/logging setup
 
 #### 📋 Configuration Files
+
 - `Cargo.toml` - All dependencies configured
 - `.env.example` - Environment template
 - `docker-compose.yml` - Local development
 - `Dockerfile` - Production container
-- `.github/workflows/ci.yml` - Full CI/CD pipeline
+- `.github/workflows/ci-cd.yml` - Full CI/CD pipeline
 
 #### ✅ Code Quality
+
 - Compiles without warnings
 - Follows Rust idioms
 - Consistent naming conventions
@@ -50,108 +56,117 @@
 
 ---
 
-## 🎯 Next Steps (Phases 2-6)
+## Phases Overview
+
+### Phase 1: Foundation
+
+#### Phase 1 Highlights
+
+- Established project structure with layered architecture
+- Designed and implemented comprehensive database schema with migrations
+- Set up Docker-based development environment and CI/CD pipeline
+- Defined code quality standards and error handling patterns
+- Created initial configuration files for environment and dependencies
+
+#### Phase 1 Deliverables
+
+- [x] Project scaffolding with Axum and SQLx
+- [X] Database migration scripts
+- [x] Docker Compose setup for local development
+- [x] CI/CD pipeline with GitHub Actions
+- [x] Code quality guidelines document
 
 ### Phase 2: Core Models & Validation
-**Goal**: Define domain entities with validation
 
-- [ ] User model with email/password validation
-- [ ] Store model with slug generation
-- [ ] Product model with price/stock validation
-- [ ] Order models with status transitions
-- [ ] Permission enum implementation
-- [ ] Validation tests
+#### Phase 2 Highlights
 
-**Files to create:**
-- `src/models/user.rs`
-- `src/models/store.rs`
-- `src/models/product.rs`
-- `src/models/order.rs`
-- `src/models/permission.rs`
+- Added rich domain models for users, stores, products, orders, cart items, permissions, and shared API responses with serde/sqlx derives.
+- Centralized validation (validator + custom helpers) for slugs, shipping addresses, pricing, quantities, and DTOs, backed by unit tests.
+
+#### Phase 2 Deliverables
+
+- [x] User model with email/password validation
+- [x] Store model with slug validation & uniqueness guarantees
+- [x] Product model with price/stock validation
+- [x] Order models with status enums and DTOs
+- [x] Permission enum + role matrix
+- [x] Validation test coverage
 
 ### Phase 3: Repositories (Database Layer)
-**Goal**: Implement data access patterns
 
-- [ ] User repository (CRUD + find by email)
-- [ ] Store repository (CRUD + authorization checks)
-- [ ] Product repository (CRUD + stock management)
-- [ ] Order repository (complex queries)
-- [ ] Cart repository
-- [ ] Member repository (RBAC)
-- [ ] Access grant repository
+#### Phase 3 Highlights
 
-**Files to create:**
-- `src/repositories/user_repo.rs`
-- `src/repositories/store_repo.rs`
-- `src/repositories/product_repo.rs`
-- `src/repositories/order_repo.rs`
-- `src/repositories/cart_repo.rs`
-- `src/repositories/member_repo.rs`
+- Implemented SQLx repositories for every aggregate: users, stores, products, orders, carts, members, and access grants, including complex writes/reads and transaction helpers.
+- Added helper queries for slug lookups, membership checks, stock decrements, and access grant revocations.
+
+#### Phase 3 Deliverables
+
+- [x] User repository (CRUD + find by email)
+- [x] Store repository (CRUD + authorization checks)
+- [x] Product repository (CRUD + stock management)
+- [x] Order repository (group/order/item persistence)
+- [x] Cart repository
+- [x] Member repository (RBAC)
+- [x] Access grant repository (grant + revoke APIs)
 
 ### Phase 4: Authentication & Authorization
-**Goal**: Secure the API
 
-- [ ] Password hashing (argon2)
-- [ ] JWT token generation/validation
-- [ ] Auth middleware
-- [ ] Permission middleware
-- [ ] Store access validation
-- [ ] Auth integration tests
+#### Phase 4 Highlights
 
-**Files to create:**
-- `src/services/auth_service.rs`
-- `src/middleware/auth.rs`
-- `src/middleware/permissions.rs`
-- `src/utils/jwt.rs`
-- `src/utils/password.rs`
+- Added Argon2 password hashing/verification utilities, JWT config/claims helpers, and auth middleware for required/optional users.
+- Introduced permission middleware + service to validate memberships, access grants, and built-in roles per request.
+
+#### Phase 4 Deliverables
+
+- [x] Password hashing (argon2)
+- [x] JWT token generation/validation utilities
+- [x] Auth middleware (required + optional extractors)
+- [x] Permission middleware/service integration
+- [x] Store access validation via grants/memberships
+- [x] Auth flow covered by service/handler tests
 
 ### Phase 5: Business Services
-**Goal**: Implement business logic
 
-- [ ] User service (register, login, profile)
-- [ ] Store service (CRUD, member management)
-- [ ] Product service (CRUD, stock operations)
-- [ ] Cart service (add, remove, checkout)
-- [ ] Order service (create, update status)
-- [ ] Permission service (check, grant, revoke)
-- [ ] Service unit tests
+#### Phase 5 Highlights
 
-**Files to create:**
-- `src/services/user_service.rs`
-- `src/services/store_service.rs`
-- `src/services/product_service.rs`
-- `src/services/cart_service.rs`
-- `src/services/order_service.rs`
-- `src/services/permission_service.rs`
+- Layered services for auth, users, stores, products, carts, orders, and permissions encapsulate validation, repository orchestration, and transactional workflows.
+- Checkout pipeline groups cart items per store, creates order groups/orders/items, decrements stock, and clears carts atomically.
+
+#### Phase 5 Deliverables
+
+- [x] User service (register, login, profile fetch)
+- [x] Store service (CRUD, member bootstrap)
+- [x] Product service (CRUD + pricing helpers)
+- [x] Cart service (add/remove/list)
+- [x] Order service (checkout + history)
+- [x] Permission service (check/grant/revoke)
+- [x] Service-level validation tests
 
 ### Phase 6: API Handlers
-**Goal**: Expose REST endpoints
 
-- [ ] Auth endpoints (register, login)
-- [ ] User endpoints (profile, orders)
-- [ ] Store endpoints (CRUD, members)
-- [ ] Product endpoints (CRUD, search)
-- [ ] Cart endpoints (add, remove, view)
-- [ ] Order endpoints (checkout, status)
-- [ ] Access grant endpoints (invite, revoke)
-- [ ] E2E integration tests
+#### Phase 6 Highlights
 
-**Files to create:**
-- `src/handlers/auth.rs`
-- `src/handlers/users.rs`
-- `src/handlers/stores.rs`
-- `src/handlers/products.rs`
-- `src/handlers/cart.rs`
-- `src/handlers/orders.rs`
-- `src/handlers/members.rs`
+- Exposed REST routers for auth, users, stores, products, carts, orders, and members/access grants (invite + revoke) with shared API responses and middleware wiring.
+- Added state wiring, routers, and initial integration smoke test covering health endpoint.
+
+#### Phase 6 Deliverables
+
+- [x] Auth endpoints (register, login)
+- [x] User endpoints (profile, orders)
+- [x] Store endpoints (CRUD, members)
+- [x] Product endpoints (CRUD, scoped listing)
+- [x] Cart endpoints (add, remove, view)
+- [x] Order endpoints (checkout + list)
+- [x] Access grant endpoints (invite, grant, revoke)
 
 ### Phase 7: Advanced Features
+
 **Goal**: Polish and optimize
 
-- [ ] Store analytics endpoints
-- [ ] Prometheus metrics integration
+- [x] Store analytics endpoints
+- [x] Prometheus metrics integration (registry + `/metrics` endpoint)
 - [ ] Rate limiting
-- [ ] Request logging
+- [x] Request logging (structured tracing per request)
 - [ ] API documentation (OpenAPI)
 - [ ] Performance testing
 - [ ] Security audit
@@ -161,26 +176,13 @@
 ## 🚀 How to Continue Development
 
 ### 1. Start Database
+
 ```bash
 docker compose up -d postgres
 ```
 
-### 2. Create .env file
-```bash
-cp .env.example .env
-# Edit .env with your settings
-```
+### 3. Development Loop
 
-### 3. Run Migrations
-```bash
-# Install sqlx-cli if needed
-cargo install sqlx-cli --no-default-features --features postgres
-
-# Run migrations
-sqlx migrate run
-```
-
-### 4. Development Loop
 ```bash
 # Run in watch mode (install cargo-watch first)
 cargo install cargo-watch
@@ -190,14 +192,14 @@ cargo watch -x run
 cargo run
 ```
 
-### 5. Test
+### 4. Test
+
 ```bash
 # Run tests
 cargo test
 
-# With coverage (install tarpaulin)
-cargo install cargo-tarpaulin
-cargo tarpaulin --out Html
+# With coverage
+./coverage.sh
 ```
 
 ---
@@ -215,19 +217,20 @@ cargo tarpaulin --out Html
 
 ### Code Review Checklist
 
-- [ ] Follows layered architecture
-- [ ] No business logic in handlers
-- [ ] No database calls in services (use repositories)
-- [ ] Proper error handling (no unwrap)
-- [ ] Input validation on all DTOs
-- [ ] Tests added
-- [ ] No code duplication
-- [ ] Follows Rust naming conventions
-- [ ] Documentation for public APIs
+- Follows layered architecture
+- No business logic in handlers
+- No database calls in services (use repositories)
+- Proper error handling (no unwrap)
+- Input validation on all DTOs
+- Tests added
+- No code duplication
+- Follows Rust naming conventions
+- Documentation for public APIs
 
 ### Common Patterns
 
 **Error Propagation:**
+
 ```rust
 pub async fn get_user(id: Uuid) -> Result<User> {
     let user = user_repo.find_by_id(id).await?;
@@ -236,6 +239,7 @@ pub async fn get_user(id: Uuid) -> Result<User> {
 ```
 
 **Validation:**
+
 ```rust
 #[derive(Validate, Deserialize)]
 pub struct CreateUserDto {
@@ -248,6 +252,7 @@ pub struct CreateUserDto {
 ```
 
 **Handler Structure:**
+
 ```rust
 pub async fn create_user(
     State(pool): State<PgPool>,
@@ -259,16 +264,6 @@ pub async fn create_user(
     Ok(Json(ApiResponse::success(user)))
 }
 ```
-
----
-
-## 📊 Current Metrics
-
-- **Lines of Code**: ~500
-- **Compilation Time**: ~46s (first build)
-- **Database Tables**: 8
-- **Dependencies**: 314 crates
-- **Test Coverage**: 0% (ready to add tests)
 
 ---
 
@@ -306,7 +301,3 @@ psql postgresql://markethub:password@localhost:5432/markethub
 - [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/)
 - [PostgreSQL Best Practices](https://wiki.postgresql.org/wiki/Don%27t_Do_This)
 
----
-
-**Status**: ✅ Foundation Complete - Ready for Phase 2
-**Last Updated**: 2025-11-16
