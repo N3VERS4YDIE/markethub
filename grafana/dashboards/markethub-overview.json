@@ -1,0 +1,75 @@
+{
+  "id": null,
+  "uid": "markethub-overview",
+  "title": "MarketHub Overview",
+  "timezone": "browser",
+  "version": 1,
+  "schemaVersion": 39,
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "HTTP Requests per Second",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "single" }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(markethub_http_requests_total[1m])) by (method, path)",
+          "legendFormat": "{{method}} {{path}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Request Duration (p95)",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "single" }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(markethub_http_request_duration_seconds_bucket[5m])) by (le, method, path))",
+          "legendFormat": "p95 {{method}} {{path}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Latest HTTP 5xx",
+      "gridPos": { "x": 0, "y": 8, "w": 8, "h": 6 },
+      "options": {
+        "reduceOptions": { "calcs": ["last"], "values": false },
+        "orientation": "horizontal"
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(markethub_http_requests_total{status=\"500\"}[5m]))",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Active HTTP Paths",
+      "gridPos": { "x": 8, "y": 8, "w": 8, "h": 6 },
+      "options": {
+        "reduceOptions": { "calcs": ["last"], "values": false }
+      },
+      "targets": [
+        {
+          "expr": "count(sum(rate(markethub_http_requests_total[5m])) by (path))",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": []
+  }
+}

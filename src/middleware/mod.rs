@@ -1,1 +1,3 @@
-// Middleware (auth, permissions) will be defined here
+pub mod auth;
+pub mod metrics;
+pub mod permissions;

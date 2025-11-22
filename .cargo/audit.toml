@@ -1,0 +1,5 @@
+[advisories]
+ignore = [
+	# sqlx macros pull the mysql driver only for compile-time query checking; runtime uses Postgres only.
+	"RUSTSEC-2023-0071",
+]
